@@ -1,0 +1,29 @@
+# Virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python build files
+*.egg-info/
+
+# Large/raw dataset files
+Project Sprint 1/Dataset/raw/
+Project Sprint 1/Dataset/processed/
+
+# Temporary files
+*.tmp
+*.log
