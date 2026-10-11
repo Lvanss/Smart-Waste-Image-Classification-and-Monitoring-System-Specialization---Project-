@@ -1,27 +1,18 @@
-# Smart Waste Image Classification and Monitoring System
+﻿# Smart Waste Image Classification and Monitoring System
 
 ## Project Overview
 
-The Smart Waste Image Classification and Monitoring System is a computer vision project that classifies a single waste item into one of six predefined waste categories:
+The Smart Waste Image Classification and Monitoring System is a computer vision application that classifies a single waste-item image into one of six categories using a Convolutional Neural Network (CNN).
 
-- Cardboard
-- Glass
-- Metal
-- Paper
-- Plastic
-- Trash
+**Waste categories:** Cardboard, Glass, Metal, Paper, Plastic, and Trash.
 
-The project uses the TrashNet dataset and a convolutional neural network (CNN) implemented using PyTorch. The system is being developed iteratively, beginning with dataset preparation and baseline model development in Sprint 1, followed by model refinement and application integration in later stages.
+The project uses the TrashNet dataset, PyTorch for model development, ONNX for model interchange, ONNX Runtime for inference, FastAPI for the prediction API, and Flet for the desktop interface.
 
 ## Dataset
 
-The project uses the TrashNet dataset.
+The project uses the TrashNet dataset, containing 2,527 images across six categories.
 
-The dataset contains 2,527 images distributed across six waste categories.
-
-### Dataset Classes
-
-| Class | Number of Images |
+| Class | Images |
 |---|---:|
 | Cardboard | 403 |
 | Glass | 501 |
@@ -31,69 +22,50 @@ The dataset contains 2,527 images distributed across six waste categories.
 | Trash | 137 |
 | **Total** | **2,527** |
 
-### Dataset Split
-
-The dataset was divided into:
+The dataset split is:
 
 - Training: 1,765 images (70%)
 - Validation: 379 images (15%)
 - Testing: 383 images (15%)
 
-The raw dataset and processed image files are excluded from Git because of their size. The preprocessing script can recreate the processed dataset from the raw dataset.
+Raw and processed image files are excluded from Git to avoid storing large dataset files in the repository. Obtain the dataset separately and follow the project's data-preparation scripts and instructions.
 
-## Sprint 1
+## Sprint 1 — Dataset Pipeline and Baseline CNN
 
-Sprint 1 focuses on establishing the machine learning foundation of the project.
+Sprint 1 established the machine-learning foundation.
 
-### Completed Tasks
-
-- Dataset inspection
-- Dataset preprocessing
-- Dataset splitting
-- PyTorch dataset loading pipeline
-- Baseline CNN implementation
-- Model input/output verification
-- Baseline CNN training
-- Test-set evaluation
-- Classification report generation
-- Confusion matrix generation
-- Training history recording
+Completed work:
+- Dataset inspection, preprocessing, and splitting
+- PyTorch dataset-loading pipeline
+- Baseline CNN implementation and training
+- Test-set evaluation and classification report
+- Confusion-matrix and training-history generation
 - Git version control setup
 
-## Baseline CNN
+### Baseline Model
 
-The baseline model is implemented using PyTorch.
+| Configuration | Value |
+|---|---|
+| Framework | PyTorch |
+| Input | 128 × 128 RGB |
+| Output classes | 6 |
+| Training device | CPU |
+| Epochs | 20 |
+| Learning rate | 0.001 |
 
-### Model Configuration
+The baseline CNN contains three convolutional blocks followed by a fully connected classifier.
 
-- Framework: PyTorch
-- Input size: 128 × 128 RGB
-- Number of classes: 6
-- Training device: CPU
-- Number of epochs: 20
-- Learning rate: 0.001
-
-The baseline CNN consists of three convolutional blocks followed by a fully connected classifier.
-
-The model produces six output classes corresponding to the six TrashNet categories.
-
-## Baseline Results
-
-The initial baseline model achieved the following results on the test dataset:
+### Baseline Test Results
 
 | Metric | Result |
 |---|---:|
-| Test Loss | 1.0590 |
+| Test loss | 1.0590 |
 | Accuracy | 69.45% |
 | Precision | 69.75% |
 | Recall | 69.45% |
-| F1-Score | 69.23% |
+| F1-score | 69.23% |
 
-These results serve as the baseline for further model improvement in later development stages.
-
-### Per-Class Performance
-
-| Class | Precision | Recall | F1-Score |
+| Class | Precision | Recall | F1-score |
 |---|---:|---:|---:|
 | Cardboard | 0.78 | 0.74 | 0.76 |
 | Glass | 0.61 | 0.71 | 0.65 |
@@ -102,7 +74,101 @@ These results serve as the baseline for further model improvement in later devel
 | Plastic | 0.72 | 0.56 | 0.63 |
 | Trash | 0.65 | 0.52 | 0.58 |
 
-The confusion matrix generated during evaluation is stored in:
+The baseline accuracy is below the project's 80% target. These metrics are the baseline evaluation results, not a claim that the target has been achieved.
 
-```text
-Project Sprint 1/results/confusion_matrix.png
+## Sprint 2 — ONNX Deployment and Application Integration
+
+Sprint 2 integrated the trained model into an image-classification application.
+
+Completed implementation:
+- Exported the trained model to ONNX format
+- Validated the ONNX model and compared its outputs with PyTorch
+- Implemented CPU inference using ONNX Runtime
+- Created a FastAPI service for image prediction
+- Created a Flet desktop GUI for image selection and prediction display
+
+### Inference Pipeline
+
+1. The user selects a waste-item image in the desktop GUI.
+2. The GUI sends the image to the FastAPI `/predict` endpoint.
+3. The API validates and processes the uploaded image.
+4. The predictor preprocesses the image and runs ONNX Runtime inference.
+5. The API returns the predicted category, confidence, and inference latency.
+6. The GUI displays the prediction result.
+
+The current interface uses image uploads; webcam-based classification is not implemented.
+
+### Model Export Verification
+
+The ONNX export and verification process completed successfully. The reported maximum output difference between PyTorch and ONNX Runtime was `0.00000381`, and inference used `CPUExecutionProvider`.
+
+### Example Application Tests
+
+Representative sample images from the six categories were tested through the application. These checks demonstrate basic application functionality; they should not be interpreted as the model's overall test accuracy.
+
+## Installation
+
+Use Python 3.11 and run commands from the repository root.
+
+### Sprint 1 — Training and Evaluation Dependencies
+
+```bash
+python -m venv .venv
+```
+
+Activate the environment, then install:
+
+```bash
+pip install -r requirements-sprint1.txt
+```
+
+### Sprint 2 — Deployment and GUI Dependencies
+
+With the environment activated, install:
+
+```bash
+pip install -r requirements-sprint2.txt
+```
+
+The Sprint 2 requirements file includes the Sprint 1 dependencies.
+
+## Running the Application
+
+Run these commands from inside the `Project Sprint` directory, with the virtual environment activated.
+
+### 1. Start the API
+
+```bash
+python -m uvicorn src.api.main:app --reload
+```
+
+The API is available at `http://127.0.0.1:8000`. Interactive API documentation is available at `http://127.0.0.1:8000/docs`.
+
+### 2. Start the Desktop GUI
+
+Open a second terminal, activate the same environment, navigate to `Project Sprint`, and run:
+
+```bash
+python -m src.gui.app
+```
+
+Keep the API running while using the GUI.
+
+## Repository Notes
+
+- Dataset images are not included in this repository.
+- The ONNX model is used for application inference.
+- Checkpoints, generated results, and other artifacts are included only when tracked and available in the repository.
+- The project currently uses PyTorch for training and ONNX Runtime for deployment inference.
+
+## Limitations and Future Improvements
+
+- Improve classification performance, especially for categories with lower recall.
+- Continue evaluating model performance on held-out and real-world images.
+- Add automated tests for API validation, error handling, and inference behavior.
+- Consider webcam input and additional deployment options as future enhancements.
+
+## Dependency Files
+
+- `requirements-sprint1.txt` — training, data processing, and evaluation dependencies.
+- `requirements-sprint2.txt` — Sprint 1 dependencies plus API, GUI, and ONNX deployment dependencies.

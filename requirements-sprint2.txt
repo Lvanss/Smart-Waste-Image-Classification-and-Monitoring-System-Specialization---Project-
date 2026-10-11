@@ -1,0 +1,8 @@
+-r requirements-sprint1.txt
+fastapi
+uvicorn
+python-multipart
+flet
+onnx
+onnxscript
+onnxruntime
